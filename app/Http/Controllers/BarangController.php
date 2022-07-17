@@ -14,7 +14,6 @@ class BarangController extends Controller
      */
     public function index()
     {
-        $dataBarang = DB::table('barang')->get();
         return view('pages.tables');
     }
 
@@ -23,64 +22,27 @@ class BarangController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
-    {
-        //
+    public function listBarang(){
+        try{
+            $dataBarang = DB::table('barang')->get();
+            return response()->json($dataBarang);
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
     }
+    
+    public function addBarang(Request $request){
+        try{
+            DB::table('barang')->insert([
+                'nama_barang' => $request->namaBarang,
+                'harga_barang' => $request->hargaBarang,
+                'jumlah_barang' => $request->qtyBarang,
+                
+            ]);
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+            return response()->json('success');
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
     }
 }
