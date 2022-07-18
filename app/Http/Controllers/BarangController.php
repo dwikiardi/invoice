@@ -37,7 +37,7 @@ class BarangController extends Controller
                 'nama_barang' => $request->namaBarang,
                 'harga_barang' => $request->hargaBarang,
                 'jumlah_barang' => $request->qtyBarang,
-                
+                'satuan_barang' => $request->satuanBarang,
             ]);
 
             return response()->json('success');

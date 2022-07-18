@@ -6,11 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
         Schema::create('barang', function (Blueprint $table) {
@@ -18,6 +13,7 @@ return new class extends Migration
             $table->string('nama_barang')->unique();
             $table->string('harga_barang');
             $table->integer('jumlah_barang');
+            $table->string('satuan_barang');
         });
     }
 

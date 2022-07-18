@@ -14,20 +14,19 @@
                     <!-- Card header -->
                     <div class="card-header border-0 pl-3">
                         <div class="row">
-                            <h3 class="mb--1 col-10">Data Barang</h3>
-                            <div class="col-2"><button type="button" class="btn btn-sm btn-primary float-right" data-toggle="modal" data-target="#exampleModal">Tambah</button></div>
+                            <h3 class="mb--1 col-8">Data Barang</h3>
+                            <div class="col-4 pl-6 ml--3"><button type="button" class="btn btn-sm btn-primary float-left" data-toggle="modal" data-target="#exampleModal">Tambah</button></div>
                         </div>
                     </div>
                     <!-- Light table -->
                     <div class="table-responsive p-3 mt--3">
-                        <table class="table align-items-center table-flush" id="listBarang">
+                        <table class="table table-bordered display" id="listBarang">
                             <thead class="thead-light">
                                 <tr>
                                     <th scope="col" class="sort" data-sort="name">Keterangan</th>
                                     <th scope="col" class="sort" data-sort="budget">Harga (Rp) satuan</th>
                                     <th scope="col" class="sort" data-sort="status">Qty</th>
                                     <th scope="col" class="sort" data-sort="completion">Satuan</th>
-                                    <th scope="col">Total</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -39,8 +38,8 @@
                     <div class="card-header border-0">
                         <h3 class="mb-0">Barang Terjual</h3>
                     </div>
-                    <div class="table-responsive">
-                        <table class="table align-items-center table-flush">
+                    <div class="table-responsive p-3 mt--3">
+                        <table class="table align-items-center table-flush" id="invoiceBarang">
                             <thead class="thead-light">
                                 <tr>
                                     <th scope="col" class="sort" data-sort="name">Keterangan</th>
@@ -79,9 +78,17 @@
                       <input type="text" class="form-control" name="hargaBarang" id="hargaBarang">
                     </div>
                     <div class="form-group">
-                        <label for="qty-barang">qty</label>
+                        <label for="qty-barang">Qty</label>
                         <input type="text" class="form-control" name="qtyBarang" id="qtyBarang">
-                      </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="satuan-barang">Satuan</label>
+                        <select class="custom-select" name="satuanBarang" id="satuanBarang">
+                            <option selected>Pilih Satuan Barang</option>
+                            <option value="Pax">Pax</option>
+                            <option value="Buah">Buah</option>
+                          </select>
+                    </div>
                   </form>
             </div>
             <div class="modal-footer">
@@ -100,8 +107,44 @@
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).ready(function () {
-            $('#listBarang').DataTable({
+            var tableInvoice = $('#invoiceBarang').DataTable({
                 "autoWidth": false,
+                'columns' : [
+                    {'data' : 'nama_barang'},
+                    {'data' : 'harga_barang'},
+                    {'data' : 'jumlah_barang'},
+                    {'data' : 'satuan_barang'},
+                ],
+                "oLanguage": {
+                        "oPaginate": {
+                            "sPrevious": "<<", // This is the link to the previous page
+                            "sNext": ">>", // This is the link to the next page
+                    }
+                }
+            })
+            var tableBarang = $('#listBarang').DataTable({
+                'select' : {
+                    'style' : 'multi'
+                },
+                "autoWidth": false,
+                dom: 
+                    "<'row'<'col-sm-5'l><'col-md-4'<'ml-7 pl-8'f>><'col-md-3 mt--5 ml--7 pl-9'<'dt-buttons btn-group flex-wrap float-right position-fixed'B>>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+                buttons: [
+                    {
+                        text: 'Add to Invoice Table',
+                        className: 'btn btn-sm btn-success btnJual',
+                        // action: function () {
+                        //     var dataBarang = tableBarang.rows( { selected: true } ).data();
+                        //     var data = [];
+                        //     $.each(dataBarang, function (index, value) {
+                        //         data.push(value)
+                        //     });
+                        //     console.log(data)
+                        // }
+                    }
+                ],
                 'ajax': {
                         'headers': {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -116,6 +159,7 @@
                     {'data' : 'nama_barang'},
                     {'data' : 'harga_barang'},
                     {'data' : 'jumlah_barang'},
+                    {'data' : 'satuan_barang'},
                 ],
                 "oLanguage": {
                         "oPaginate": {
@@ -124,6 +168,20 @@
                     }
                 }
             })
+
+            $('body').on('click', '.btnJual', function (){
+                var dataBarang = tableBarang.rows( { selected: true } ).data();
+                var data = [];
+                $.each(dataBarang, function (index, value) {
+                    tableInvoice.row.add({
+                        "nama_barang": value.nama_barang,
+                        "harga_barang": value.harga_barang,
+                        "jumlah_barang": value.jumlah_barang,
+                        "satuan_barang": value.satuan_barang,
+                    }).draw();
+                });
+            });
+
 
             $('.btn-tambah').on('click', function () { 
                 $.ajaxSetup({
