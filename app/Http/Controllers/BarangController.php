@@ -45,4 +45,15 @@ class BarangController extends Controller
             return $e->getMessage();
         }
     }
+
+    public function printInvoice(Request $request){
+        return view('pages.print')->with([
+                'data_barang' => $request->datatable,
+                'data_qty' => $request->dataqty,
+                'data_dp' => $request->datadp,
+                'data_disc' => $request->datadisc,
+                'data_sum' => $request->datasum,
+                'data_total' => $request->datatotal,
+            ]);
+    }
 }

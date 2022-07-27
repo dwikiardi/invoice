@@ -31,10 +31,11 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('upgrade', function () {return view('pages.upgrade');})->name('upgrade');
 	Route::get('map', function () {return view('pages.maps');})->name('map');
 	Route::get('icons', function () {return view('pages.icons');})->name('icons');
-	// Route::get('table-list', function () {return view('pages.tables');})->name('table');
+	Route::get('test', function () {return view('pages.print');})->name('test');
 	Route::get('/list', ['as' => 'table', 'uses' => 'App\Http\Controllers\BarangController@index']);
     Route::get('/list/barang', ['as' => 'list.table', 'uses' => 'App\Http\Controllers\BarangController@listBarang']);
 	Route::post('/list/addbarang', ['as' => 'add.table', 'uses' => 'App\Http\Controllers\BarangController@addBarang']);
+	Route::post('/list/printInvoice', ['as' => 'add.table', 'uses' => 'App\Http\Controllers\BarangController@printInvoice']);
 	Route::put('profile/password', ['as' => 'profile.password', 'uses' => 'App\Http\Controllers\ProfileController@password']);
 });
 
