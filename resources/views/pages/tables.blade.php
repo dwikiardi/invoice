@@ -15,8 +15,10 @@
                     <div class="card-header border-0 pl-3">
                         <div class="row">
                             <h3 class="mb--1 col-7">Data Barang</h3>
-                            <div class="col-3"><button type="button" class="btn btn-sm btn-primary float-right mr-1" data-toggle="modal" data-target="#modalBarang">Tambah</button></div>
-                            <div class="col-2"><button type="button" class="btn btn-sm btn-success btnJual float-right mr--2">Add to Invoice Table</button></div>
+                            <div class="col-5">
+                                <button type="button" class="btn btn-sm btn-primary float-right mb-1 mr--2" data-toggle="modal" data-target="#modalBarang">Tambah</button>
+                                <button type="button" class="btn btn-sm btn-success btnJual float-right mr-1">Add to Invoice Table</button>
+                            </div>
                         </div>
                     </div>
                     <!-- Light table -->
@@ -37,9 +39,11 @@
                 <div class="card p-3 mt-3">
                     <div class="card-header border-0 p-1">
                         <div class="row">
-                            <h3 class="mb--1 col-8">Data Invoice</h3>
-                            <div class="col-3"><button type="button" class="btn btn-sm btn-primary float-right mr-4" data-toggle="modal" data-target="#modalInvoice">Tambah invoice</button></div>
-                            <div class="col-1"><button type="button" class="btn btn-sm btn-success float-right ml--2 btn-export">Export PDF</button></div>
+                            <h3 class="mb--1 col-7">Data Invoice</h3>
+                            <div class="col-5">
+                                <button type="button" class="btn btn-sm btn-primary float-right mb-1 mr--1" data-toggle="modal" data-target="#modalInvoice">Tambah invoice</button>
+                                <button type="button" class="btn btn-sm btn-success float-right btn-export mr-1">Export PDF</button>
+                            </div>
                         </div>
                     </div>
                     <div class="table-responsive p-1 mt-3">
@@ -66,11 +70,11 @@
                                 <tr>
                                     <th colspan="4" style="text-align:right">Discount :</th>
                                     <th><input type="text" class="form-control form-control-sm touch" name="disc" id="disc" placeholder="Input Disc" /></th>
-                                </tr>   
+                                </tr>
                                 <tr>
                                     <th colspan="4" style="text-align:right">Total :</th>
                                     <th></th>
-                                </tr> 
+                                </tr>
                             </tfoot>
                         </table>
                     </div>
@@ -162,7 +166,8 @@
     <script src="{{ asset('argon') }}/vendor/chart.js/dist/Chart.extension.js"></script>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="//cdn.datatables.net/plug-ins/1.12.1/api/sum().js"></script>
-    
+    <script src="{{asset('functions/print/main.js')}}"></script>
+
     <script>
         $(document).ready(function () {
             var rupiah = Intl.NumberFormat("id-ID", {
@@ -189,7 +194,7 @@
                     },
                     {
                         targets: 4,
-                        data : 'jumlah_barang', 
+                        data : 'jumlah_barang',
                         render: $.fn.dataTable.render.number( '.', ',', 0, 'Rp ' ),
                     }
                 ],
@@ -203,7 +208,7 @@
                 },
                 footerCallback: function (row, data, start, end, display) {
                     var api = this.api(), data;
-                    // Update footer 
+                    // Update footer
                     var intVal = function ( i ) {
                         return typeof i === 'string' ?
                         i.replace(/[\.,Rp]/g, '')*1 :
@@ -217,7 +222,7 @@
                     .reduce( function (a, b) {
                         return intVal(a) + intVal(b);
                     }, 0 );
-                    
+
                     var valdp = $('input[name="dp"]').val();
                     var newdp = valdp.replace(/[\.Rp]/g, '')
 
@@ -237,7 +242,7 @@
                             var totalAkhir = totalsum;
                         }
                     }
-                    
+
                     if(totalAkhir === '' || totalAkhir === undefined){
                         totalAkhir = 0;
                     }
@@ -282,13 +287,13 @@
                 // Update row calculations
                 tableInvoice.draw(false);
             });
-            
+
             var tableBarang = $('#listBarang').DataTable({
                 'select' : {
                     'style' : 'multi'
                 },
                 "autoWidth": false,
-                dom: 
+                dom:
                     "<'row'<'col-sm-6'l><'col-md-6'f>>" +
                     "<'row'<'col-sm-12'tr>>" +
                     "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
@@ -328,7 +333,7 @@
                         "satuan_barang": satuanBarang,
                     }).draw();
             });
-            
+
             $('body').on('click', '.btnJual', function (){
                 var dataBarang = tableBarang.rows( { selected: true } ).data();
                 var data = [];
@@ -342,7 +347,7 @@
                 });
             });
 
-            $('.btn-export').on('click', function () { 
+            $('.btn-export').on('click', function () {
                 $.ajaxSetup({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -358,27 +363,56 @@
                 var datadisc = $('#invoiceBarang tfoot #disc').val()
                 var datasum = $('#invoiceBarang tfoot tr:eq(0) th:eq(1)').text()
                 var datatotal = $('#invoiceBarang tfoot tr:eq(3) th:eq(1)').text()
-                $.ajax({
-                    type: "POST",
-                    url: "/list/printInvoice",
-                    data: {
-                        datatable : table,
-                        dataqty : dataqty,
-                        datadp : datadp,
-                        datadisc : datadisc,
-                        datasum : datasum,
-                        datatotal : datatotal
-                    },
-                    success: function (response) {
-                        console.log(response)
-                    },
-                    error: function(response){
-                        console.log(response)
-                    }
-                });     
+
+                var mode = "iframe"; //popup
+                var close = mode == "popup";
+                var options = {
+                    mode: mode,
+                    popClose: close,
+                    popTitle: 'LaporanDataKategori',
+                };
+
+                Swal.fire({
+                title: 'Invoice Buat Siapa Nih?',
+                html:
+                    '<form>' +
+                        '<div class="form-group text-left">' +
+                            '<label for="nama-cl">Nama Pelanggan : </label>' +
+                            '<input type="text" class="form-control" name="nama-cl" id="nama-cl">' +
+                        '</div>' +
+                        '<div class="form-group text-left">' +
+                            '<label for="alamat-cl">Alamat Pelanggan : </label>' +
+                            '<input type="text" class="form-control" name="alamat-cl" id="alamat-cl">' +
+                        '</div>' +
+                    '</form>' ,
+                focusConfirm: false,
+                preConfirm: () => {
+                    return [
+                        $.ajax({
+                            type: "GET",
+                            url: "print",
+                            dataType: "json",
+                            data: {
+                                datatable : table,
+                                dataqty : dataqty,
+                                datadp : datadp,
+                                datadisc : datadisc,
+                                datasum : datasum,
+                                datatotal : datatotal,
+                                dataNama : $('#nama-cl').val(),
+                                dataAlamat : $('#alamat-cl').val()
+                            },
+                            success: function (response) {
+                                document.title= 'Laporan - ' + new Date().toJSON().slice(0,10).replace(/-/g,'/')
+                                $(response.data).find('.page-content').printArea(options);
+                            },
+                        })
+                    ]
+                }
+                })
             });
 
-            $('.btn-tambah').on('click', function () { 
+            $('.btn-tambah').on('click', function () {
                 $.ajaxSetup({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -399,7 +433,7 @@
                     error: function(response){
                         console.log(response)
                     }
-                });     
+                });
             });
         });
     </script>

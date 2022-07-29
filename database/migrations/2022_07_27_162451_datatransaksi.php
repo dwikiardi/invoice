@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('terjual', function (Blueprint $table) {
             $table->id();
             $table->text('transaksi')->unique();
-            $table->date('created_at');
+            $table->string('tanggal');
         });
     }
 

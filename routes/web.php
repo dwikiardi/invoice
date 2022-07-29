@@ -37,5 +37,6 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::post('/list/addbarang', ['as' => 'add.table', 'uses' => 'App\Http\Controllers\BarangController@addBarang']);
 	Route::post('/list/printInvoice', ['as' => 'add.table', 'uses' => 'App\Http\Controllers\BarangController@printInvoice']);
 	Route::put('profile/password', ['as' => 'profile.password', 'uses' => 'App\Http\Controllers\ProfileController@password']);
+    Route::get('/print', ['as' => 'print', 'uses' => 'App\Http\Controllers\BarangController@printInvoice']);
 });
 
