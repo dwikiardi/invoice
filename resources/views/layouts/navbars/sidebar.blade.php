@@ -6,7 +6,8 @@
         </button>
         <!-- Brand -->
         <a class="navbar-brand pt-0" href="{{ route('home') }}">
-            <img src="{{ asset('argon') }}/img/brand/blue.png" class="navbar-brand-img" alt="...">
+            {{-- <img src="{{ asset('argon') }}/img/brand/blue.png" class="navbar-brand-img" alt="..."> --}}
+            JITO Invoice
         </a>
         <!-- User -->
         <ul class="nav align-items-center d-md-none">
@@ -26,18 +27,6 @@
                         <i class="ni ni-single-02"></i>
                         <span>{{ __('My profile') }}</span>
                     </a>
-                    <a href="#" class="dropdown-item">
-                        <i class="ni ni-settings-gear-65"></i>
-                        <span>{{ __('Settings') }}</span>
-                    </a>
-                    <a href="#" class="dropdown-item">
-                        <i class="ni ni-calendar-grid-58"></i>
-                        <span>{{ __('Activity') }}</span>
-                    </a>
-                    <a href="#" class="dropdown-item">
-                        <i class="ni ni-support-16"></i>
-                        <span>{{ __('Support') }}</span>
-                    </a>
                     <div class="dropdown-divider"></div>
                     <a href="{{ route('logout') }}" class="dropdown-item" onclick="event.preventDefault();
                     document.getElementById('logout-form').submit();">
@@ -50,7 +39,7 @@
         <!-- Collapse -->
         <div class="collapse navbar-collapse" id="sidenav-collapse-main">
             <!-- Collapse header -->
-            <div class="navbar-collapse-header d-md-none">
+            {{-- <div class="navbar-collapse-header d-md-none">
                 <div class="row">
                     <div class="col-6 collapse-brand">
                         <a href="{{ route('home') }}">
@@ -64,19 +53,9 @@
                         </button>
                     </div>
                 </div>
-            </div>
-            <!-- Form -->
-            <form class="mt-4 mb-3 d-md-none">
-                <div class="input-group input-group-rounded input-group-merge">
-                    <input type="search" class="form-control form-control-rounded form-control-prepended" placeholder="{{ __('Search') }}" aria-label="Search">
-                    <div class="input-group-prepend">
-                        <div class="input-group-text">
-                            <span class="fa fa-search"></span>
-                        </div>
-                    </div>
-                </div>
-            </form>
+            </div> --}}
             <!-- Navigation -->
+            <hr class="my-3 mt--3">
             <ul class="navbar-nav">
                 <li class="nav-item">
                         <a class="nav-link {{ $activePage == 'dashboard' ? ' active' : '' }}" href="{{ route('home') }}">
@@ -84,31 +63,15 @@
                         </a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link {{ $activePage == 'table' ? ' active' : '' }}" href="{{ route('table') }}">
-                        <i class="ni ni-bullet-list-67 text-default"></i> {{ __('Tables') }}
+                    <a class="nav-link {{ $activePage == 'datainvoice' ? ' active' : '' }}" href="{{ route('datainvoice') }}">
+                        <i class="fa-solid fa-file-invoice"></i> {{ __('Data Invoice') }}
                     </a>
                   </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('icons') }}">
-                        <i class="ni ni-planet text-blue"></i> {{ __('Icons') }}
+                  <li class="nav-item">
+                    <a class="nav-link {{ $activePage == 'invoice' ? ' active' : '' }}" href="{{ route('table') }}">
+                        <i class="fa-brands fa-creative-commons-share"></i> {{ __('Create Invoice') }}
                     </a>
-                </li>
-                <li class="nav-item ">
-                    <a class="nav-link" href="{{ route('map') }}">
-                        <i class="ni ni-pin-3 text-orange"></i> {{ __('Maps') }}
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('table') }}">
-                      <i class="ni ni-bullet-list-67 text-default"></i>
-                      <span class="nav-link-text">Tables</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="ni ni-circle-08 text-pink"></i> {{ __('Register') }}
-                    </a>
-                </li>
+                  </li>
             </ul>
             <!-- Divider -->
             <hr class="my-3">

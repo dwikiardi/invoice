@@ -82,14 +82,16 @@ class BarangController extends Controller
                 'data_total' => $request->datatotal,
             ];
 
+            $noInvoice = DB::table('terjual')->get();
+            $inv = json_decode($noInvoice, true);
+
             $header[] = [
                 'data_nama' => $request->dataNama,
                 'data_alamat' => $request->dataAlamat,
             ];
 
-            $view = [
-                'data' => view('pages.print', compact('data','header','footer'))->render(),
-            ];
+
+
             $transaksi = [
                 'barangterjual' => $data,
                 'data_qty' => $request->dataqty,
@@ -101,26 +103,28 @@ class BarangController extends Controller
                 'data_alamat' => $request->dataAlamat,
             ];
 
-            $noInvoice = DB::table('terjual')->get();
-            $inv = json_decode($noInvoice, true);
-
-            foreach($inv as $data){
-                if($data['tanggal'] == date("d-m-Y")){
-                    DB::table('terjual')->insert([
-                        'transaksi' => json_encode($transaksi),
-                        'tanggal' => date("d-m-Y")
-                    ]);
-                } else {
-
+            if($inv == null){
+                $nomer = 1;
+            } else {
+                foreach($inv as $inv){
+                    if($inv['tanggal'] !== date("d-m-Y")){
+                        $nomer = 1;
+                    } else {
+                        $nomer = $inv['nomer'] + 1;
+                    }
                 }
             }
-            // dd($inv[0]['tanggal']);
-            // $jsonTransaksi = json_encode($transaksi);
-            // dd($jsonTransaksi);
 
+            DB::table('terjual')->insert([
+                'nomer' => $nomer,
+                'transaksi' => json_encode($transaksi),
+                'tanggal' => date("d-m-Y")
+            ]);
 
-
-            return response()->json($view);
+            $view = [
+                'data' => view('pages.print', compact('data','header','footer', 'nomer'))->render(),
+            ];
+        return response()->json($view);
     } catch (\Exception $e) {
         return $e->getMessage();
     }

@@ -37,7 +37,7 @@
                                             Gianyar, {{date('d-m-Y')}}
                                         </div>
                                         <div class="mt-6 mb--4 text-secondary-m1 text-600 text-125 text-right">
-                                            Nomor Invoice : IN10013.07.2022
+                                            Nomor Invoice : IN{{$nomer}}{{date('d-m-Y')}}                                          
                                         </div>
                                     </div>
                             </div>
@@ -62,7 +62,7 @@
                                         <tr>
                                             <td>1</td>
                                             <td>{{$value['nama_barang']}}</td>
-                                            <td>{{$value['harga_barang']}}</td>
+                                            <td>Rp {{number_format($value['harga_barang'],0,',','.')}}</td>
                                             <td class="text-95">{{$value['jumlah_barang']/$value['harga_barang']}}</td>
                                             <td class="text-secondary-d2">{{$value['satuan_barang']}}</td>
                                         </tr>

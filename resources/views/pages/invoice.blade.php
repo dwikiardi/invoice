@@ -1,4 +1,4 @@
-@extends('layouts.app', ['activePage' => 'invoice', 'titlePage' => __('Create Invoice')])
+@extends('layouts.app', ['activePage' => 'dataInvoice', 'titlePage' => __('Data Invoice')])
 
 @section('content')
     <div class="header bg-gradient-primary pb-4 pt-5 pt-md-8">
@@ -14,149 +14,26 @@
                     <!-- Card header -->
                     <div class="card-header border-0 pl-3">
                         <div class="row">
-                            <h3 class="mb--1 col-7">Data Barang</h3>
-                            <div class="col-5">
-                                <button type="button" class="btn btn-sm btn-primary float-right mb-1 mr--2" data-toggle="modal" data-target="#modalBarang">Tambah</button>
-                                <button type="button" class="btn btn-sm btn-success btnJual float-right mr-1">Add to Invoice Table</button>
-                            </div>
+                            <h3 class="mb--1 col-7">Data Invoice</h3>
                         </div>
                     </div>
                     <!-- Light table -->
-                    <div class="table-responsive p-3 mt--3">
-                        <table class="table table-bordered display" id="listBarang">
-                            <thead class="thead-light">
-                                <tr>
-                                    <th scope="col" class="sort" data-sort="name">Keterangan</th>
-                                    <th scope="col" class="sort" data-sort="budget">Harga (Rp) satuan</th>
-                                    <th scope="col" class="sort" data-sort="status">Qty</th>
-                                    <th scope="col" class="sort" data-sort="completion">Satuan</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="card p-3 mt-3">
-                    <div class="card-header border-0 p-1">
-                        <div class="row">
-                            <h3 class="mb--1 col-7">Data Invoice</h3>
-                            <div class="col-5">
-                                <button type="button" class="btn btn-sm btn-primary float-right mb-1 mr--1" data-toggle="modal" data-target="#modalInvoice">Tambah invoice</button>
-                                <button type="button" class="btn btn-sm btn-success float-right btn-export mr-1">Export PDF</button>
-                            </div>
+                        <div class="table-responsive p-3 mt--3">
+                            <table class="table table-bordered display" id="listBarang">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th scope="col" class="sort" data-sort="name">Keterangan</th>
+                                        <th scope="col" class="sort" data-sort="budget">Harga (Rp) satuan</th>
+                                        <th scope="col" class="sort" data-sort="status">Qty</th>
+                                        <th scope="col" class="sort" data-sort="completion">Satuan</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
                         </div>
                     </div>
-                    <div class="table-responsive p-1 mt-3">
-                        <table class="table table-bordered display" id="invoiceBarang">
-                            <thead class="thead-light">
-                                <tr>
-                                    <th scope="col" class="sort" data-sort="name">Keterangan</th>
-                                    <th scope="col" class="sort" data-sort="budget">Harga (Rp) satuan</th>
-                                    <th scope="col" class="sort" data-sort="status">Qty</th>
-                                    <th scope="col" class="sort" data-sort="completion">Satuan</th>
-                                    <th scope="col">Total</th>
-                                </tr>
-                            </thead>
-                            <tbody id="invoice"></tbody>
-                            <tfoot>
-                                <tr>
-                                    <th colspan="4"style="text-align:right">Sub Total :</th>
-                                    <th></th>
-                                </tr>
-                                <tr>
-                                    <th colspan="4"  style="text-align:right">Down Payment :</th>
-                                    <th><input type="text" class="form-control form-control-sm touch" name="dp" id="dp" placeholder="Input DP" /></th>
-                                </tr>
-                                <tr>
-                                    <th colspan="4" style="text-align:right">Discount :</th>
-                                    <th><input type="text" class="form-control form-control-sm touch" name="disc" id="disc" placeholder="Input Disc" /></th>
-                                </tr>
-                                <tr>
-                                    <th colspan="4" style="text-align:right">Total :</th>
-                                    <th></th>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    {{-- Modal tambah barang --}}
-    <div class="modal fade" id="modalBarang" tabindex="-1" role="dialog" aria-labelledby="modalBarang" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-          <div class="modal-content">
-            <div class="modal-header bg-light">
-              <h5 class="modal-title" id="exampleModalLongTitle">Tambah Barang</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body bg-white">
-                <form id="form-barang">
-                    <div class="form-group">
-                      <label for="nama-barang">Keterangan</label>
-                      <input type="text" class="form-control" name="namaBarang" id="namaBarang">
-                    </div>
-                    <div class="form-group">
-                      <label for="harga-barang">Harga</label>
-                      <input type="text" class="form-control" name="hargaBarang" id="hargaBarang">
-                    </div>
-                    <div class="form-group">
-                        <label for="qty-barang">Qty</label>
-                        <input type="text" class="form-control" name="qtyBarang" id="qtyBarang">
-                    </div>
-                    <div class="form-group">
-                        <label for="satuan-barang">Satuan</label>
-                        <input type="text" class="form-control" name="satuanBarang" id="satuanBarang">
-                    </div>
-                  </form>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary btn-tambah">Tambah Data</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {{-- Modal tambah invoice --}}
-    <div class="modal fade" id="modalInvoice" tabindex="-1" role="dialog" aria-labelledby="modalInvoice" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-          <div class="modal-content">
-            <div class="modal-header bg-light">
-              <h5 class="modal-title" id="exampleModalLongTitle">Tambah Invoice</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body bg-white">
-                <form id="form-invoice">
-                    <div class="form-group">
-                      <label for="nama-barang">Nama Barang</label>
-                      <input type="text" class="form-control" name="namaBarang" id="namaBarang">
-                    </div>
-                    <div class="form-group">
-                      <label for="harga-barang">Harga</label>
-                      <input type="text" class="form-control" name="hargaBarang" id="hargaBarang">
-                    </div>
-                    <div class="form-group">
-                        <label for="qty-barang">Qty</label>
-                        <input type="text" class="form-control" name="qtyBarang" id="qtyBarang">
-                    </div>
-                    <div class="form-group">
-                        <label for="satuan-barang">Satuan</label>
-                        <input type="text" class="form-control" name="satuanBarang" id="satuanBarang">
-                    </div>
-                  </form>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary btn-sm tbhInvoice">Tambah invoice</button>
-            </div>
-          </div>
-        </div>
       </div>
 
 @endsection

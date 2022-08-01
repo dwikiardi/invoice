@@ -31,7 +31,8 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('upgrade', function () {return view('pages.upgrade');})->name('upgrade');
 	Route::get('map', function () {return view('pages.maps');})->name('map');
 	Route::get('icons', function () {return view('pages.icons');})->name('icons');
-	Route::get('test', function () {return view('pages.print');})->name('test');
+	// Route::get('test', function () {return view('pages.print');})->name('test');
+	Route::get('/datainvoice', ['as' => 'datainvoice', 'uses' => 'App\Http\Controllers\invoiceController@index']);
 	Route::get('/list', ['as' => 'table', 'uses' => 'App\Http\Controllers\BarangController@index']);
     Route::get('/list/barang', ['as' => 'list.table', 'uses' => 'App\Http\Controllers\BarangController@listBarang']);
 	Route::post('/list/addbarang', ['as' => 'add.table', 'uses' => 'App\Http\Controllers\BarangController@addBarang']);
