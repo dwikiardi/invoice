@@ -1,0 +1,12 @@
+table.dataTable tbody td.no-padding {
+    padding: 3;
+}
+
+table.dataTable tbody td.no-padding div.table-responsive  table.table.table-bordered.display tbody#bodyChild{
+    background-color: white;
+}
+
+table.dataTable tbody tr td.dt-control::before {
+    margin-top: 2;
+}
+

@@ -1,4 +1,5 @@
 @extends('layouts.app', ['activePage' => 'dataInvoice', 'titlePage' => __('Data Invoice')])
+<link href="{{ asset('assets/css/invoicedetail.css') }}" rel="stylesheet" type="text/css" >
 
 @section('content')
     <div class="header bg-gradient-primary pb-4 pt-5 pt-md-8">
@@ -19,13 +20,13 @@
                     </div>
                     <!-- Light table -->
                         <div class="table-responsive p-3 mt--3">
-                            <table class="table table-bordered display" id="listBarang">
+                            <table class="table table-bordered display" id="invoiceTable">
                                 <thead class="thead-light">
                                     <tr>
-                                        <th scope="col" class="sort" data-sort="name">Keterangan</th>
-                                        <th scope="col" class="sort" data-sort="budget">Harga (Rp) satuan</th>
-                                        <th scope="col" class="sort" data-sort="status">Qty</th>
-                                        <th scope="col" class="sort" data-sort="completion">Satuan</th>
+                                        <th></th>
+                                        <th scope="col" class="sort" data-sort="name">Nomer Invoice</th>
+                                        <th scope="col" class="sort" data-sort="budget">Nama Pelanggan</th>
+                                        <th scope="col" class="sort" data-sort="status">Alamat Pelanggan</th>
                                     </tr>
                                 </thead>
                                 <tbody></tbody>
@@ -35,7 +36,6 @@
                 </div>
             </div>
       </div>
-
 @endsection
 
 @push('js')
@@ -46,150 +46,87 @@
     <script src="{{asset('functions/print/main.js')}}"></script>
 
     <script>
+        var rupiah = Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR"
+        });
+        /* Formatting function for row details - modify as you need */
+        function format(d) {
+            // `d` is the original data object for the row
+            var tablebody = '';
+            $.each(d.data_barang, function (index, value) {
+                tablebody+= '<tr>' +
+                                '<td>' + value.nama_barang + '</td>' +
+                                '<td>' + rupiah.format(value.harga_barang) + '</td>' +
+                                '<td>' + value.jumlah_barang/value.harga_barang + '</td>' +
+                                '<td>' + value.satuan_barang + '</td>' +
+                                '<td>' + rupiah.format((value.jumlah_barang/value.harga_barang)*value.harga_barang) + '</td>' +
+                            '</tr>'
+            });
+            return (
+                '<div class="table-responsive">' +
+                    '<table class="table table-bordered display">' +
+                        '<thead class="thead-light">' +
+                                '<tr>' +
+                                    '<th scope="col" class="sort" data-sort="name">Keterangan</th>' +
+                                    '<th scope="col" class="sort" data-sort="budget">Harga</th>' +
+                                    '<th scope="col" class="sort" data-sort="status">Qty</th>' +
+                                    '<th scope="col" class="sort" data-sort="status">Satuan</th>' +
+                                    '<th scope="col" class="sort" data-sort="status">Total</th>' +
+                                '</tr>' +
+                            '</thead>' +
+                            '<tbody id="bodyChild">' +
+                                 tablebody +
+                            '</tbody>' +
+                            '<tfoot>' +
+                                '<tr>' +
+                                    '<th colspan="4"style="text-align:right">Sub Total :</th>' +
+                                    '<th>' + d.data_sum + '</th>' +
+                                '</tr>' +
+                                '<tr>' +
+                                    '<th colspan="4"  style="text-align:right">Down Payment :</th>' +
+                                    '<th>' + d.data_dp + '</th>' +
+                                '</tr>' +
+                                '<tr>' +
+                                    '<th colspan="4" style="text-align:right">Discount :</th>' +
+                                    '<th>' + d.data_disc + '</th>' +
+                                '</tr>' +
+                                '<tr>' +
+                                    '<th colspan="4" style="text-align:right">Total :</th>' +
+                                    '<th>' + d.data_total + '</th>' +
+                                '</tr>' +
+                            '</tfoot>' +
+                    '</table>' +
+                '</div>'
+            );
+        }
+
         $(document).ready(function () {
-            var rupiah = Intl.NumberFormat("id-ID", {
-                style: "currency",
-                currency: "IDR"
-            });
-
-            var tableInvoice = $('#invoiceBarang').DataTable({
+            var invoicetable = $('#invoiceTable').DataTable({
                 "autoWidth": false,
-                'columns' : [
-                    {'data' : 'nama_barang'},
-                    {'data' : 'harga_barang' , render:$.fn.dataTable.render.number( '.', ',', 0, 'Rp ' )},
-                    {'data' : 'jumlah_barang'},
-                    {'data' : 'satuan_barang'},
-                    // {'data' : 'harga_barang' , render:$.fn.dataTable.render.number( '.', ',', 0, 'Rp ',',00' )},
-                ],
-                columnDefs: [
-                    {
-                        targets: 2,
-                        width: "25%",
-                        render: function(data, type, full, meta) {
-                        return '\<input type="text" class="form-control form-control-sm touch" name="item_quantity" id="item_quantity" placeholder="Input Qty" />';
-                        },
-                    },
-                    {
-                        targets: 4,
-                        data : 'jumlah_barang',
-                        render: $.fn.dataTable.render.number( '.', ',', 0, 'Rp ' ),
-                    }
-                ],
-                rowCallback: function (row, data) {
-                    var val = $('input[name="item_quantity"]', row).val();
-                    if ( val === '' || val === undefined ) {
-                    val = 1;
-                    }
-                    var total = parseInt(data['harga_barang']) * val;
-                    this.api().cell(row, 4).data(total);
-                },
-                footerCallback: function (row, data, start, end, display) {
-                    var api = this.api(), data;
-                    // Update footer
-                    var intVal = function ( i ) {
-                        return typeof i === 'string' ?
-                        i.replace(/[\.,Rp]/g, '')*1 :
-                        typeof i === 'number' ?
-                        i : 0;
-                    };
-
-                    totalsum = api
-                    .cells( null, 4, { page: 'current'} )
-                    .render('display')
-                    .reduce( function (a, b) {
-                        return intVal(a) + intVal(b);
-                    }, 0 );
-
-                    var valdp = $('input[name="dp"]').val();
-                    var newdp = valdp.replace(/[\.Rp]/g, '')
-
-                    var valdisc = $('input[name="disc"]').val();
-                    var newdisc = valdisc.replace(/ %/g, '')
-
-                    if(totalsum >= 1){
-                        if(newdp >= 1){
-                            var dp = totalsum - newdp;
-                            if(newdisc >= 1){
-                                var total = (parseFloat(newdisc)/100)*dp
-                                var totalAkhir = dp - total
-                            } else {
-                                var totalAkhir = dp;
-                            }
-                        } else {
-                            var totalAkhir = totalsum;
-                        }
-                    }
-
-                    if(totalAkhir === '' || totalAkhir === undefined){
-                        totalAkhir = 0;
-                    }
-
-                    $('tr:eq(0) th:eq(1)', api.table().footer()).html(rupiah.format(totalsum));
-                    $('tr:eq(1) th:eq(1)', api.table().footer()).html();
-                    $('tr:eq(2) th:eq(1)', api.table().footer()).html();
-                    $('tr:eq(3) th:eq(1)', api.table().footer()).html(rupiah.format(totalAkhir));
-                },
-                "oLanguage": {
-                        "oPaginate": {
-                            "sPrevious": "<<", // This is the link to the previous page
-                            "sNext": ">>", // This is the link to the next page
-                    }
-                }
-            })
-
-            $('#invoiceBarang tbody').on('change', 'input[name="item_quantity"]', function () {
-                // Update row calculations
-                tableInvoice.draw(false);
-            });
-
-            $('#invoiceBarang tfoot').on('change', 'input[name="dp"]', function () {
-                // Update row calculations
-                // alert('footer')
-                tableInvoice.draw(false);
-            });
-
-            $('#invoiceBarang tfoot #dp').keyup(function (event) {
-                $(this).val(function (index, value) {
-                    return 'Rp ' + value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-                });
-            });
-
-            $('#invoiceBarang tfoot #disc').keyup(function (event) {
-                $(this).val(function (index, value) {
-                    return value.replace(/\D/g, "") + ' %';
-                });
-            });
-
-            $('#invoiceBarang tfoot').on('change', 'input[name="disc"]', function () {
-                // Update row calculations
-                tableInvoice.draw(false);
-            });
-
-            var tableBarang = $('#listBarang').DataTable({
-                'select' : {
-                    'style' : 'multi'
-                },
-                "autoWidth": false,
-                dom:
-                    "<'row'<'col-sm-6'l><'col-md-6'f>>" +
-                    "<'row'<'col-sm-12'tr>>" +
-                    "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
                 'ajax': {
                         'headers': {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                         },
                         'type': "GET",
-                        'url': "/list/barang",
+                        'url': "/datainvoice/list",
                         'dataSrc': function (response) {
                             return response;
                         },
                     },
                 'columns' : [
-                    {'data' : 'nama_barang'},
-                    {'data' : 'harga_barang', render:$.fn.dataTable.render.number( '.', ',', 0, 'Rp ' )},
-                    {'data' : 'jumlah_barang'},
-                    {'data' : 'satuan_barang'},
+                    {
+                        className: 'dt-control',
+                        orderable: false,
+                        data: null,
+                        defaultContent: '',
+                        width: "5%"
+                    },
+                    {'data' : 'nomer_inv'},
+                    {'data' : 'nama_pelanggan',},
+                    {'data' : 'alamat_pelanggan'},
                 ],
+                order: [[1, 'asc']],
                 "oLanguage": {
                         "oPaginate": {
                             "sPrevious": "<<", // This is the link to the previous page
@@ -198,119 +135,19 @@
                 }
             })
 
-            $('body').on('click', '.tbhInvoice', function (){
-                var namaBarang = $('#form-invoice #namaBarang').val()
-                var hargaBarang = $('#form-invoice #hargaBarang').val()
-                var qtyBarang = $('#form-invoice #qtyBarang').val()
-                var satuanBarang = $('#form-invoice #satuanBarang').val()
-                tableInvoice.row.add({
-                        "nama_barang": namaBarang,
-                        "harga_barang": hargaBarang,
-                        "jumlah_barang": qtyBarang,
-                        "satuan_barang": satuanBarang,
-                    }).draw();
-            });
+            $('#invoiceTable tbody').on('click', 'td.dt-control', function () {
+                var tr = $(this).closest('tr');
+                var row = invoicetable.row(tr);
 
-            $('body').on('click', '.btnJual', function (){
-                var dataBarang = tableBarang.rows( { selected: true } ).data();
-                var data = [];
-                $.each(dataBarang, function (index, value) {
-                    tableInvoice.row.add({
-                        "nama_barang": value.nama_barang,
-                        "harga_barang": value.harga_barang,
-                        "jumlah_barang": 0,
-                        "satuan_barang": value.satuan_barang,
-                    }).draw();
-                });
-            });
-
-            $('.btn-export').on('click', function () {
-                $.ajaxSetup({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    }
-                });
-                var datatable = tableInvoice.rows().data();
-                table = []
-                $.each(datatable, function (index, value) {
-                    table.push(value)
-                });
-                var dataqty = $('#invoiceBarang tbody #item_quantity').val()
-                var datadp = $('#invoiceBarang tfoot #dp').val()
-                var datadisc = $('#invoiceBarang tfoot #disc').val()
-                var datasum = $('#invoiceBarang tfoot tr:eq(0) th:eq(1)').text()
-                var datatotal = $('#invoiceBarang tfoot tr:eq(3) th:eq(1)').text()
-
-                var mode = "iframe"; //popup
-                var close = mode == "popup";
-                var options = {
-                    mode: mode,
-                    popClose: close,
-                    popTitle: 'LaporanDataKategori',
-                };
-
-                Swal.fire({
-                title: 'Invoice Buat Siapa Nih?',
-                html:
-                    '<form>' +
-                        '<div class="form-group text-left">' +
-                            '<label for="nama-cl">Nama Pelanggan : </label>' +
-                            '<input type="text" class="form-control" name="nama-cl" id="nama-cl">' +
-                        '</div>' +
-                        '<div class="form-group text-left">' +
-                            '<label for="alamat-cl">Alamat Pelanggan : </label>' +
-                            '<input type="text" class="form-control" name="alamat-cl" id="alamat-cl">' +
-                        '</div>' +
-                    '</form>' ,
-                focusConfirm: false,
-                preConfirm: () => {
-                    return [
-                        $.ajax({
-                            type: "GET",
-                            url: "print",
-                            dataType: "json",
-                            data: {
-                                datatable : table,
-                                dataqty : dataqty,
-                                datadp : datadp,
-                                datadisc : datadisc,
-                                datasum : datasum,
-                                datatotal : datatotal,
-                                dataNama : $('#nama-cl').val(),
-                                dataAlamat : $('#alamat-cl').val()
-                            },
-                            success: function (response) {
-                                document.title= 'Laporan - ' + new Date().toJSON().slice(0,10).replace(/-/g,'/')
-                                $(response.data).find('.page-content').printArea(options);
-                            },
-                        })
-                    ]
+                if (row.child.isShown()) {
+                    // This row is already open - close it
+                    row.child.hide();
+                    tr.removeClass('shown');
+                } else {
+                    // Open this row
+                    row.child(format(row.data()),'no-padding').show();
+                    tr.addClass('shown');
                 }
-                })
-            });
-
-            $('.btn-tambah').on('click', function () {
-                $.ajaxSetup({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    }
-                });
-                let form = $('#form-barang')[0]
-                let data = new FormData(form)
-                $.ajax({
-                    type: "POST",
-                    url: "/list/addbarang",
-                    data: data,
-                    processData: false,
-                    contentType: false,
-                    cache: false,
-                    success: function (response) {
-                        console.log(response)
-                    },
-                    error: function(response){
-                        console.log(response)
-                    }
-                });
             });
         });
     </script>

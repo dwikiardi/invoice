@@ -30,6 +30,7 @@
                                     <th scope="col" class="sort" data-sort="budget">Harga (Rp) satuan</th>
                                     <th scope="col" class="sort" data-sort="status">Qty</th>
                                     <th scope="col" class="sort" data-sort="completion">Satuan</th>
+                                    <th scope="col" class="sort" data-sort="completion">Action</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -101,11 +102,11 @@
                     </div>
                     <div class="form-group">
                       <label for="harga-barang">Harga</label>
-                      <input type="text" class="form-control" name="hargaBarang" id="hargaBarang">
+                      <input type="number" class="form-control" name="hargaBarang" id="hargaBarang">
                     </div>
                     <div class="form-group">
                         <label for="qty-barang">Qty</label>
-                        <input type="text" class="form-control" name="qtyBarang" id="qtyBarang">
+                        <input type="number" class="form-control" name="qtyBarang" id="qtyBarang">
                     </div>
                     <div class="form-group">
                         <label for="satuan-barang">Satuan</label>
@@ -116,6 +117,44 @@
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
               <button type="button" class="btn btn-primary btn-tambah">Tambah Data</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+         {{-- Modal tambah barang --}}
+    <div class="modal fade" id="editBarang" tabindex="-1" role="dialog" aria-labelledby="editBarang" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header bg-light">
+              <h5 class="modal-title" id="exampleModalLongTitle">Edit Barang</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body bg-white">
+                <form id="form-editbarang">
+                    <div class="form-group">
+                      <label for="nama-barang">Keterangan</label>
+                      <input type="text" class="form-control" name="namaBarang" id="namaBarang">
+                    </div>
+                    <div class="form-group">
+                      <label for="harga-barang">Harga</label>
+                      <input type="number" class="form-control" name="hargaBarang" id="hargaBarang">
+                    </div>
+                    <div class="form-group">
+                        <label for="qty-barang">Qty</label>
+                        <input type="number" class="form-control" name="qtyBarang" id="qtyBarang">
+                    </div>
+                    <div class="form-group">
+                        <label for="satuan-barang">Satuan</label>
+                        <input type="text" class="form-control" name="satuanBarang" id="satuanBarang">
+                    </div>
+                  </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary btn-edit">Update Data</button>
             </div>
           </div>
         </div>
@@ -180,28 +219,24 @@
                 'columns' : [
                     {'data' : 'nama_barang'},
                     {'data' : 'harga_barang' , render:$.fn.dataTable.render.number( '.', ',', 0, 'Rp ' )},
-                    {'data' : 'jumlah_barang'},
+                    // {'data' : 'jumlah_barang'},
+                    {'data' : 'jumlah_barang', width: "25%",
+                        render: function(data, type, row, meta) {
+                        return '\<input type="text" class="form-control form-control-sm touch form-qty" data-idbarang='+data+' data-idform='+row.id_barang+' name="item_quantity" id='+row.id_barang+' placeholder="Input Qty" />';
+                        }},
                     {'data' : 'satuan_barang'},
-                    // {'data' : 'harga_barang' , render:$.fn.dataTable.render.number( '.', ',', 0, 'Rp ',',00' )},
                 ],
                 columnDefs: [
-                    {
-                        targets: 2,
-                        width: "25%",
-                        render: function(data, type, full, meta) {
-                        return '\<input type="text" class="form-control form-control-sm touch" name="item_quantity" id="item_quantity" placeholder="Input Qty" />';
-                        },
-                    },
                     {
                         targets: 4,
                         data : 'jumlah_barang',
                         render: $.fn.dataTable.render.number( '.', ',', 0, 'Rp ' ),
-                    }
+                    },
                 ],
                 rowCallback: function (row, data) {
                     var val = $('input[name="item_quantity"]', row).val();
                     if ( val === '' || val === undefined ) {
-                    val = 1;
+                        val = 1;
                     }
                     var total = parseInt(data['harga_barang']) * val;
                     this.api().cell(row, 4).data(total);
@@ -261,8 +296,24 @@
             })
 
             $('#invoiceBarang tbody').on('change', 'input[name="item_quantity"]', function () {
+                var data = $(this).data('idbarang');
+                var data1 = $(this).data('idform');
+                var input = $('#invoiceBarang tbody #'+data1+'').val();
+                if(data < input ){
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Qty barang gak cukup'
+                    }).then((result) => {
+                    /* Read more about isConfirmed, isDenied below */
+                    if (result.isConfirmed) {
+                            $('#invoiceBarang tbody #'+data1+'').val(data);
+                        }
+                    })
+                } else {
+                    tableInvoice.draw(false);
+                }
                 // Update row calculations
-                tableInvoice.draw(false);
             });
 
             $('#invoiceBarang tfoot').on('change', 'input[name="dp"]', function () {
@@ -312,6 +363,19 @@
                     {'data' : 'harga_barang', render:$.fn.dataTable.render.number( '.', ',', 0, 'Rp ' )},
                     {'data' : 'jumlah_barang'},
                     {'data' : 'satuan_barang'},
+                    {
+                        'data'  : null ,
+                        render  : function(data, type, row, meta) {
+                            return  '\<button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#editBarang" id="btnEdit" data-nama='+row.nama_barang+' data-harga='+row.harga_barang+' data-jumlah='+row.jumlah_barang+' data-satuan='+row.satuan_barang+'>Edit</button>'+
+                                    '\<button type="button" class="btn btn-sm btn-danger" id="btnDelete" data-deleteid='+row.id+'>Delete</button>';
+                        }
+                    }
+                ],
+                columnDefs: [
+                    {
+                        targets: 4,
+                        width: "5%",
+                    },
                 ],
                 "oLanguage": {
                         "oPaginate": {
@@ -320,6 +384,84 @@
                     }
                 }
             })
+
+            $('#listBarang tbody').on('click', '#btnDelete', function (){
+                var id = $(this).data('deleteid');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajaxSetup({
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            }
+                        });
+                        $.ajax({
+                            type: "POST",
+                            url: "/list/delete",
+                            data: {id : id},
+                            success: function (response) {
+                                console.log(response)
+                            }
+                        });
+                        $('#listBarang').DataTable().ajax.reload();
+                        Swal.fire(
+                        'Deleted!',
+                        'Your file has been deleted.',
+                        'success'
+                        )
+                    }
+                })
+            });
+
+            $('#listBarang tbody').on('click', '#btnEdit', function (){
+                var data = tableBarang.row($(this).parents('tr')).data();
+
+                var namaBarang = $('#editBarang #form-editbarang #namaBarang').val(data.nama_barang)
+                var hargaBarang = $('#editBarang #form-editbarang #hargaBarang').val(data.harga_barang)
+                var qtyBarang = $('#editBarang #form-editbarang #qtyBarang').val(data.jumlah_barang)
+                var satuanBarang = $('#editBarang #form-editbarang #satuanBarang').val(data.satuan_barang)
+            });
+
+            $('body').on('click', '.btn-edit', function (){
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+                let form = $('#form-editbarang')[0]
+                let data = new FormData(form)
+                $.ajax({
+                    type: "POST",
+                    url: "/list/editbarang",
+                    data: data,
+                    processData: false,
+                    contentType: false,
+                    cache: false,
+                    success: function (response) {
+                        if(response == 'success'){
+                            $('#modalBarang').modal('hide');
+                            Swal.fire(
+                                'Berhasil!',
+                                'Barang sudah di update!',
+                                'success'
+                            )
+                            $('#listBarang').DataTable().ajax.reload();
+                            $('#modalBarang #form-barang').trigger("reset");
+                        }
+                    },
+                    error: function(response){
+                        console.log(response)
+                    }
+                });
+            });
+
 
             $('body').on('click', '.tbhInvoice', function (){
                 var namaBarang = $('#form-invoice #namaBarang').val()
@@ -339,9 +481,10 @@
                 var data = [];
                 $.each(dataBarang, function (index, value) {
                     tableInvoice.row.add({
+                        "id_barang":value.id,
                         "nama_barang": value.nama_barang,
                         "harga_barang": value.harga_barang,
-                        "jumlah_barang": 0,
+                        "jumlah_barang": value.jumlah_barang,
                         "satuan_barang": value.satuan_barang,
                     }).draw();
                 });
@@ -428,7 +571,16 @@
                     contentType: false,
                     cache: false,
                     success: function (response) {
-                        console.log(response)
+                        if(response == 'success'){
+                            $('#modalBarang').modal('hide');
+                            Swal.fire(
+                                'Berhasil!',
+                                'Barang sudah di input!',
+                                'success'
+                            )
+                            $('#listBarang').DataTable().ajax.reload();
+                            $('#modalBarang #form-barang').trigger("reset");
+                        }
                     },
                     error: function(response){
                         console.log(response)

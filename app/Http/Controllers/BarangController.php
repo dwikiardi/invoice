@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Barang;
 
 class BarangController extends Controller
 {
@@ -40,6 +41,26 @@ class BarangController extends Controller
                 'satuan_barang' => $request->satuanBarang,
             ]);
 
+            return response()->json('success');
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function deleteBarang(Request $request){
+        try{
+            $delete = Barang::find($request->id);
+            $delete->delete();
+
+            return response()->json('success');
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function editBarang(Request $request){
+        try{
+            dd($request->all);
             return response()->json('success');
         } catch (\Exception $e) {
             return $e->getMessage();

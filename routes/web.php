@@ -33,9 +33,12 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('icons', function () {return view('pages.icons');})->name('icons');
 	// Route::get('test', function () {return view('pages.print');})->name('test');
 	Route::get('/datainvoice', ['as' => 'datainvoice', 'uses' => 'App\Http\Controllers\invoiceController@index']);
+    Route::get('/datainvoice/list', ['as' => 'list.datainvoice', 'uses' => 'App\Http\Controllers\invoiceController@invoice']);
 	Route::get('/list', ['as' => 'table', 'uses' => 'App\Http\Controllers\BarangController@index']);
     Route::get('/list/barang', ['as' => 'list.table', 'uses' => 'App\Http\Controllers\BarangController@listBarang']);
+    Route::post('/list/delete', ['as' => 'delete.table', 'uses' => 'App\Http\Controllers\BarangController@deleteBarang']);
 	Route::post('/list/addbarang', ['as' => 'add.table', 'uses' => 'App\Http\Controllers\BarangController@addBarang']);
+    Route::post('/list/editbarang', ['as' => 'edit.table', 'uses' => 'App\Http\Controllers\BarangController@editBarang']);
 	Route::post('/list/printInvoice', ['as' => 'add.table', 'uses' => 'App\Http\Controllers\BarangController@printInvoice']);
 	Route::put('profile/password', ['as' => 'profile.password', 'uses' => 'App\Http\Controllers\ProfileController@password']);
     Route::get('/print', ['as' => 'print', 'uses' => 'App\Http\Controllers\BarangController@printInvoice']);
