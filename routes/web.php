@@ -13,24 +13,28 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Auth::routes();
 
 Route::get('/home', 'App\Http\Controllers\HomeController@index')->name('home');
 
 Route::group(['middleware' => 'auth'], function () {
-	Route::resource('user', 'App\Http\Controllers\UserController', ['except' => ['show']]);
-	Route::get('profile', ['as' => 'profile.edit', 'uses' => 'App\Http\Controllers\ProfileController@edit']);
+	// Route::resource('user', 'App\Http\Controllers\UserController', ['except' => ['show']]);
+    Route::get('profile', ['as' => 'profile.edit', 'uses' => 'App\Http\Controllers\ProfileController@edit']);
+	Route::get('datauser', ['as' => 'datauser', 'uses' => 'App\Http\Controllers\UserController@index']);
+    Route::get('datauser/list', ['as' => 'datauser.list', 'uses' => 'App\Http\Controllers\UserController@list']);
+    Route::post('datauser/delete', ['as' => 'datauser.delete', 'uses' => 'App\Http\Controllers\UserController@delete']);
+    Route::post('datauser/register', ['as' => 'datauser.register', 'uses' => 'App\Http\Controllers\UserController@create']);
 	Route::put('profile', ['as' => 'profile.update', 'uses' => 'App\Http\Controllers\ProfileController@update']);
-	Route::get('upgrade', function () {return view('pages.upgrade');})->name('upgrade');
-	Route::get('map', function () {return view('pages.maps');})->name('map');
-	Route::get('icons', function () {return view('pages.icons');})->name('icons');
+	// Route::get('upgrade', function () {return view('pages.upgrade');})->name('upgrade');
+	// Route::get('map', function () {return view('pages.maps');})->name('map');
+	// Route::get('icons', function () {return view('pages.icons');})->name('icons');
 	// Route::get('test', function () {return view('pages.print');})->name('test');
 	Route::get('/datainvoice', ['as' => 'datainvoice', 'uses' => 'App\Http\Controllers\invoiceController@index']);
     Route::get('/datainvoice/list', ['as' => 'list.datainvoice', 'uses' => 'App\Http\Controllers\invoiceController@invoice']);

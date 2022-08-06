@@ -31,6 +31,11 @@ class invoiceController extends Controller
                 $namapelanggan[] = $data['data_nama'];
             }
 
+            $uppelanggan = [];
+            foreach($dataterjual as $data){
+                $uppelanggan[] = $data['data_up'];
+            }
+
             $alamatpelanggan = [];
             foreach($dataterjual as $data){
                 $alamatpelanggan[] = $data['data_alamat'];
@@ -66,6 +71,7 @@ class invoiceController extends Controller
                 $data[] = [
                     "nomer_inv" => $nomerinv[$key],
                     "nama_pelanggan" => $namapelanggan[$key],
+                    'up_pelanggan' => $uppelanggan[$key],
                     'alamat_pelanggan' => $alamatpelanggan[$key],
                     'data_sum' => $datasum[$key],
                     'data_dp' => $datadp[$key],

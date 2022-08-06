@@ -37,6 +37,7 @@
                         </table>
                     </div>
                 </div>
+
                 <div class="card p-3 mt-3">
                     <div class="card-header border-0 p-1">
                         <div class="row">
@@ -51,6 +52,7 @@
                         <table class="table table-bordered display" id="invoiceBarang">
                             <thead class="thead-light">
                                 <tr>
+                                    <th></th>
                                     <th scope="col" class="sort" data-sort="name">Keterangan</th>
                                     <th scope="col" class="sort" data-sort="budget">Harga (Rp) satuan</th>
                                     <th scope="col" class="sort" data-sort="status">Qty</th>
@@ -61,19 +63,19 @@
                             <tbody id="invoice"></tbody>
                             <tfoot>
                                 <tr>
-                                    <th colspan="4"style="text-align:right">Sub Total :</th>
+                                    <th colspan="5"style="text-align:right">Sub Total :</th>
                                     <th></th>
                                 </tr>
                                 <tr>
-                                    <th colspan="4"  style="text-align:right">Down Payment :</th>
+                                    <th colspan="5"  style="text-align:right">Down Payment :</th>
                                     <th><input type="text" class="form-control form-control-sm touch" name="dp" id="dp" placeholder="Input DP" /></th>
                                 </tr>
                                 <tr>
-                                    <th colspan="4" style="text-align:right">Discount :</th>
+                                    <th colspan="5" style="text-align:right">Discount :</th>
                                     <th><input type="text" class="form-control form-control-sm touch" name="disc" id="disc" placeholder="Input Disc" /></th>
                                 </tr>
                                 <tr>
-                                    <th colspan="4" style="text-align:right">Total :</th>
+                                    <th colspan="5" style="text-align:right">Total :</th>
                                     <th></th>
                                 </tr>
                             </tfoot>
@@ -82,6 +84,7 @@
                 </div>
             </div>
         </div>
+        @include('layouts.footers.auth')
     </div>
 
     {{-- Modal tambah barang --}}
@@ -173,16 +176,16 @@
             <div class="modal-body bg-white">
                 <form id="form-invoice">
                     <div class="form-group">
-                      <label for="nama-barang">Nama Barang</label>
+                      <label for="nama-barang">Keterangan</label>
                       <input type="text" class="form-control" name="namaBarang" id="namaBarang">
                     </div>
                     <div class="form-group">
                       <label for="harga-barang">Harga</label>
-                      <input type="text" class="form-control" name="hargaBarang" id="hargaBarang">
+                      <input type="number" class="form-control" name="hargaBarang" id="hargaBarang">
                     </div>
                     <div class="form-group">
                         <label for="qty-barang">Qty</label>
-                        <input type="text" class="form-control" name="qtyBarang" id="qtyBarang">
+                        <input type="number" class="form-control" name="qtyBarang" id="qtyBarang">
                     </div>
                     <div class="form-group">
                         <label for="satuan-barang">Satuan</label>
@@ -217,18 +220,26 @@
             var tableInvoice = $('#invoiceBarang').DataTable({
                 "autoWidth": false,
                 'columns' : [
+                    {
+                        'data' : null,
+                        'width': "5%",
+                        render : function(data, type, row, meta) {
+                        return '\<button class="btn btn-sm btn-danger btnInvDelete"><i class="fa fa-trash"></i></button/>';
+                        }
+                    },
                     {'data' : 'nama_barang'},
                     {'data' : 'harga_barang' , render:$.fn.dataTable.render.number( '.', ',', 0, 'Rp ' )},
                     // {'data' : 'jumlah_barang'},
                     {'data' : 'jumlah_barang', width: "25%",
                         render: function(data, type, row, meta) {
-                        return '\<input type="text" class="form-control form-control-sm touch form-qty" data-idbarang='+data+' data-idform='+row.id_barang+' name="item_quantity" id='+row.id_barang+' placeholder="Input Qty" />';
-                        }},
+                        return '\<input type="number" class="form-control form-control-sm touch form-qty" data-idbarang='+data+' data-idform='+row.id_barang+' name="item_quantity" id='+row.id_barang+' placeholder="Input Qty" />';
+                        }
+                    },
                     {'data' : 'satuan_barang'},
                 ],
                 columnDefs: [
                     {
-                        targets: 4,
+                        targets: 5,
                         data : 'jumlah_barang',
                         render: $.fn.dataTable.render.number( '.', ',', 0, 'Rp ' ),
                     },
@@ -239,7 +250,7 @@
                         val = 1;
                     }
                     var total = parseInt(data['harga_barang']) * val;
-                    this.api().cell(row, 4).data(total);
+                    this.api().cell(row, 5).data(total);
                 },
                 footerCallback: function (row, data, start, end, display) {
                     var api = this.api(), data;
@@ -252,7 +263,7 @@
                     };
 
                     totalsum = api
-                    .cells( null, 4, { page: 'current'} )
+                    .cells( null, 5, { page: 'current'} )
                     .render('display')
                     .reduce( function (a, b) {
                         return intVal(a) + intVal(b);
@@ -294,6 +305,11 @@
                     }
                 }
             })
+
+            $('#invoiceBarang').on( 'click', '.btnInvDelete', function () {
+                console.log('lolo')
+                tableInvoice.row($(this).parents('tr')).remove().draw();
+            } );
 
             $('#invoiceBarang tbody').on('change', 'input[name="item_quantity"]', function () {
                 var data = $(this).data('idbarang');
@@ -488,6 +504,7 @@
                         "satuan_barang": value.satuan_barang,
                     }).draw();
                 });
+                $('#listBarang').DataTable().ajax.reload();
             });
 
             $('.btn-export').on('click', function () {
@@ -524,6 +541,10 @@
                             '<input type="text" class="form-control" name="nama-cl" id="nama-cl">' +
                         '</div>' +
                         '<div class="form-group text-left">' +
+                            '<label for="up-cl">UP : </label>' +
+                            '<input type="text" class="form-control" name="up-cl" id="up-cl">' +
+                        '</div>' +
+                        '<div class="form-group text-left">' +
                             '<label for="alamat-cl">Alamat Pelanggan : </label>' +
                             '<input type="text" class="form-control" name="alamat-cl" id="alamat-cl">' +
                         '</div>' +
@@ -543,6 +564,7 @@
                                 datasum : datasum,
                                 datatotal : datatotal,
                                 dataNama : $('#nama-cl').val(),
+                                dataUp : $('#up-cl').val(),
                                 dataAlamat : $('#alamat-cl').val()
                             },
                             success: function (response) {

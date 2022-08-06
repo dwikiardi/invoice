@@ -63,13 +63,18 @@
                         </a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link {{ $activePage == 'datainvoice' ? ' active' : '' }}" href="{{ route('datainvoice') }}">
+                    <a class="nav-link {{ $activePage == 'dataInvoice' ? ' active' : '' }}" href="{{ route('datainvoice') }}">
                         <i class="fa-solid fa-file-invoice"></i> {{ __('Data Invoice') }}
                     </a>
                   </li>
                   <li class="nav-item">
                     <a class="nav-link {{ $activePage == 'invoice' ? ' active' : '' }}" href="{{ route('table') }}">
                         <i class="fa-brands fa-creative-commons-share"></i> {{ __('Create Invoice') }}
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link {{ $activePage == 'usermanager' ? ' active' : '' }}" href="{{ route('datauser') }}">
+                        <i class="fa-solid fa-user"></i> {{ __('User Manager') }}
                     </a>
                   </li>
             </ul>

@@ -109,6 +109,7 @@ class BarangController extends Controller
             $header[] = [
                 'data_nama' => $request->dataNama,
                 'data_alamat' => $request->dataAlamat,
+                'data_up' => $request->dataUp,
             ];
 
 
@@ -121,6 +122,7 @@ class BarangController extends Controller
                 'data_sum' => $request->datasum,
                 'data_total' => $request->datatotal,
                 'data_nama' => $request->dataNama,
+                'data_up' => $request->dataUp,
                 'data_alamat' => $request->dataAlamat,
             ];
 

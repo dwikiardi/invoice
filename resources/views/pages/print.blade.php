@@ -23,7 +23,15 @@
                                     </div>
                                     <div>
                                         <span class="text-sm text-grey-m2 align-middle">UP  :</span>
-                                        <span class="text-600 text-110 text-black align-middle">-</span>
+                                        @if($header[0]['data_up'] == null)
+                                            <span class="text-600 text-110 text-black align-middle">
+                                                -
+                                            </span>
+                                        @else
+                                            <span class="text-600 text-110 text-black align-middle">
+                                                {{$header[0]['data_up']}}
+                                            </span>
+                                        @endif
                                     </div>
                                     <div>
                                         <span class="text-sm text-grey-m2 align-middle">Alamat  :</span>
@@ -37,7 +45,7 @@
                                             Gianyar, {{date('d-m-Y')}}
                                         </div>
                                         <div class="mt-6 mb--4 text-secondary-m1 text-600 text-125 text-right">
-                                            Nomor Invoice : IN{{$nomer}}{{date('d-m-Y')}}                                          
+                                            Nomor Invoice : IN{{$nomer}}{{date('d-m-Y')}}
                                         </div>
                                     </div>
                             </div>
@@ -60,7 +68,7 @@
                                     @foreach ($data as $key => $value)
                                         <tr></tr>
                                         <tr>
-                                            <td>1</td>
+                                            <td>{{$key+1}}</td>
                                             <td>{{$value['nama_barang']}}</td>
                                             <td>Rp {{number_format($value['harga_barang'],0,',','.')}}</td>
                                             <td class="text-95">{{$value['jumlah_barang']/$value['harga_barang']}}</td>
@@ -140,12 +148,12 @@
                                 </div>
                                 <div class="row pl-9 ml-5">
                                     <div class="col-sm text-center">
-                                      Hormat Kami, <br> Direktur Utama <br> PT. Eka Teknologi Solusi
+                                      Hormat Kami, <br> {{ auth()->user()->jabatan }} <br> PT. Eka Teknologi Solusi
                                     </div>
                                 </div>
                                 <div class="row pl-9 ml-5">
                                     <div class="col-sm text-center">
-                                      <br> <br> <br> I Wayan Pujito Adnyana
+                                      <br> <br> <br> {{ auth()->user()->name }}
                                     </div>
                                 </div>
                               </div>
