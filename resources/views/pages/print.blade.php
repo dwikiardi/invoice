@@ -10,7 +10,7 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="text-center text-150">
-                            <span class="text-default-d3">Header Invoice</span>
+                            <img src="{{ asset('assets/img/header/header.jpeg') }}">
                         </div>
                     </div>
                 </div>
@@ -165,7 +165,7 @@
             <div class="row">
                 <div class="col-12 text-center">
                     <div class="text-center text-150">
-                        <span class="text-default-d3">Footer Invoice</span>
+                        <img src="{{ asset('assets/img/footer/footer.jpeg') }}">
                     </div>
                 </div>
             </div>
