@@ -112,8 +112,6 @@ class BarangController extends Controller
                 'data_up' => $request->dataUp,
             ];
 
-
-
             $transaksi = [
                 'barangterjual' => $data,
                 'data_qty' => $request->dataqty,

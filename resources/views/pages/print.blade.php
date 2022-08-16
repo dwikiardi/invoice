@@ -61,6 +61,7 @@
                                         <th>KETERANGAN</th>
                                         <th>HARGA (Rp) SATUAN</th>
                                         <th>QTY</th>
+                                        <th>Satuan</th>
                                         <th>TOTAL</th>
                                     </tr>
                                 </thead>
@@ -72,6 +73,7 @@
                                             <td>{{$value['nama_barang']}}</td>
                                             <td>Rp {{number_format($value['harga_barang'],0,',','.')}}</td>
                                             <td class="text-95">{{$value['jumlah_barang']/$value['harga_barang']}}</td>
+                                            <td class="text-95">{{$value['satuan_barang']}}</td>
                                             <td class="text-secondary-d2">Rp {{number_format($value['jumlah_barang'],0,',','.')}}</td>
                                         </tr>
                                         @endforeach
@@ -79,19 +81,19 @@
                                 <tfoot>
                                     @foreach ($footer as $data)
                                     <tr>
-                                        <th colspan="4" style="text-align:right">Sub Total :</th>
+                                        <th colspan="5" style="text-align:right">Sub Total :</th>
                                         <th>{{$data['data_sum']}}</th>
                                     </tr>
                                     <tr>
-                                        <th colspan="4" style="text-align:right">Down Payment :</th>
+                                        <th colspan="5" style="text-align:right">Down Payment :</th>
                                         <th>{{$data['data_dp']}}</th>
                                     </tr>
                                     <tr>
-                                        <th colspan="4" style="text-align:right">Disc :</th>
+                                        <th colspan="5" style="text-align:right">Disc :</th>
                                         <th>{{$data['data_disc']}}</th>
                                     </tr>
                                     <tr>
-                                        <th colspan="4" style="text-align:right">Total :</th>
+                                        <th colspan="5" style="text-align:right">Total :</th>
                                         <th>{{$data['data_total']}}</th>
                                     </tr>
                                     @endforeach
