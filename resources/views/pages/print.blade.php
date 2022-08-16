@@ -72,7 +72,7 @@
                                             <td>{{$value['nama_barang']}}</td>
                                             <td>Rp {{number_format($value['harga_barang'],0,',','.')}}</td>
                                             <td class="text-95">{{$value['jumlah_barang']/$value['harga_barang']}}</td>
-                                            <td class="text-secondary-d2">{{$value['satuan_barang']}}</td>
+                                            <td class="text-secondary-d2">Rp {{number_format($value['jumlah_barang'],0,',','.')}}</td>
                                         </tr>
                                         @endforeach
                                 </tbody>
