@@ -44,13 +44,6 @@ hr {
   border-top: 1px solid rgba(0,0,0,.1);
 }
 
-.text-grey-m2 {
-  color: #888a8d!important;
-}
-
-.text-success-m2 {
-  color: #86bd68!important;
-}
 
 .font-bolder, .text-600 {
   font-weight: 600!important;
@@ -85,7 +78,7 @@ hr {
 }
 
 .text-120 {
-  font-size: 120%!important;
+  font-size: 15px!important;
 }
 .text-primary-m1 {
   color: #4087d4!important;
@@ -98,10 +91,10 @@ hr {
   color: #68a3d5!important;
 }
 .text-150 {
-  font-size: 200px !important;
+  font-size: 20px !important;
 }
 .text-60 {
-  font-size: 60%!important;
+  font-size: 25px !important;
 }
 .text-grey-m1 {
   color: #7b7d81!important;
