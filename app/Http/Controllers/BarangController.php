@@ -60,7 +60,12 @@ class BarangController extends Controller
 
     public function editBarang(Request $request){
         try{
-            dd($request->all);
+            DB::table('barang')->where('id', $request->id)->update([
+                'nama_barang' => $request->namaBarang,
+                'harga_barang' => $request->hargaBarang,
+                'jumlah_barang' => $request->qtyBarang,
+                'satuan_barang' => $request->satuanBarang,
+            ]);
             return response()->json('success');
         } catch (\Exception $e) {
             return $e->getMessage();

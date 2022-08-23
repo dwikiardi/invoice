@@ -137,6 +137,7 @@
             </div>
             <div class="modal-body bg-white">
                 <form id="form-editbarang">
+                    <input type="hidden" name="id" id="id">
                     <div class="form-group">
                       <label for="nama-barang">Keterangan</label>
                       <input type="text" class="form-control" name="namaBarang" id="namaBarang">
@@ -157,7 +158,7 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary btn-edit">Update Data</button>
+              <button type="button" class="btn btn-primary btn-editBarang">Update Data</button>
             </div>
           </div>
         </div>
@@ -382,7 +383,7 @@
                     {
                         'data'  : null ,
                         render  : function(data, type, row, meta) {
-                            return  '\<button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#editBarang" id="btnEdit" data-nama='+row.nama_barang+' data-harga='+row.harga_barang+' data-jumlah='+row.jumlah_barang+' data-satuan='+row.satuan_barang+'>Edit</button>'+
+                            return  '\<button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#editBarang" id="btnEdit" data-id='+row.id+' data-nama='+row.nama_barang+' data-harga='+row.harga_barang+' data-jumlah='+row.jumlah_barang+' data-satuan='+row.satuan_barang+'>Edit</button>'+
                                     '\<button type="button" class="btn btn-sm btn-danger" id="btnDelete" data-deleteid='+row.id+'>Delete</button>';
                         }
                     }
@@ -439,13 +440,14 @@
             $('#listBarang tbody').on('click', '#btnEdit', function (){
                 var data = tableBarang.row($(this).parents('tr')).data();
 
+                var idBarang = $('#editBarang #form-editbarang #id').val(data.id)
                 var namaBarang = $('#editBarang #form-editbarang #namaBarang').val(data.nama_barang)
                 var hargaBarang = $('#editBarang #form-editbarang #hargaBarang').val(data.harga_barang)
                 var qtyBarang = $('#editBarang #form-editbarang #qtyBarang').val(data.jumlah_barang)
                 var satuanBarang = $('#editBarang #form-editbarang #satuanBarang').val(data.satuan_barang)
             });
 
-            $('body').on('click', '.btn-edit', function (){
+            $('.btn-editBarang').on('click', function (){
                 $.ajaxSetup({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -462,14 +464,14 @@
                     cache: false,
                     success: function (response) {
                         if(response == 'success'){
-                            $('#modalBarang').modal('hide');
+                            $('#editBarang').modal('hide');
                             Swal.fire(
                                 'Berhasil!',
                                 'Barang sudah di update!',
                                 'success'
                             )
                             $('#listBarang').DataTable().ajax.reload();
-                            $('#modalBarang #form-barang').trigger("reset");
+                            $('#editBarang #form-editbarang').trigger("reset");
                         }
                     },
                     error: function(response){
